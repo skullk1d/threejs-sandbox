@@ -1,24 +1,40 @@
+// ANIMATION LOOP, executed on each animation frame
+var angularSpeed = 0.2; 
+var lastTime = 0;
+
+function animate(){
+  // update
+  var time = (new Date()).getTime();
+  var timeDiff = time - lastTime;
+  var angleChange = angularSpeed * timeDiff * 2 * Math.PI / 1000;
+  sphere.rotation.y += angleChange;
+  lastTime = time;
+
+  // render
+  renderer.render(scene, camera);
+
+  // request new frame
+  requestAnimationFrame(function(){
+      animate();
+  });
+}
+
 // set the scene size
-var WIDTH = 400,
-    HEIGHT = 300;
+var WIDTH = window.innerWidth,
+    HEIGHT = window.innerHeight;
 
 // set some camera attributes
 var VIEW_ANGLE = 45,
     ASPECT = WIDTH / HEIGHT,
-    NEAR = 0.1,
+    NEAR = 1,
     FAR = 10000;
 
 // get the DOM element to attach to
-// - assume we've got jQuery to hand
 var $container = $('#container');
 
-// create a WebGL renderer, camera
-// and a scene
+// create a WebGL renderer, camera and a scene
 var renderer = new THREE.WebGLRenderer();
-var camera = new THREE.PerspectiveCamera(  VIEW_ANGLE,
-                                ASPECT,
-                                NEAR,
-                                FAR  );
+var camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR );
 var scene = new THREE.Scene();
 
 // the camera starts at 0,0,0 so pull it back
@@ -30,10 +46,15 @@ renderer.setSize(WIDTH, HEIGHT);
 // attach the render-supplied DOM element
 $container.append(renderer.domElement);
 
-// create the sphere's material
+// default material
 var sphereMaterial = new THREE.MeshLambertMaterial(
 {
     color: 0xCC0000
+});
+
+// celulo material
+var celMaterial = new THREE.MeshLambertMaterial({
+  map: THREE.ImageUtils.loadTexture('assets/images/crate.jpg')
 });
 
 // set up the sphere vars
@@ -41,9 +62,7 @@ var radius = 50, segments = 16, rings = 16;
 
 // create a new mesh with sphere geometry -
 // we will cover the sphereMaterial next!
-var sphere = new THREE.Mesh(
-   new THREE.SphereGeometry(radius, segments, rings),
-   sphereMaterial);
+var sphere = new THREE.Mesh(new THREE.SphereGeometry(radius, segments, rings), celMaterial);
 
 // add the sphere to the scene
 scene.add(sphere);
@@ -62,29 +81,5 @@ pointLight.position.z = 130;
 // add to the scene
 scene.add(pointLight);
 
-// draw!
-renderer.render(scene, camera);
-
-
-
-
-// Paul Irish's shim layer with setTimeout fallback
-window.requestAnimFrame = (function(){
-  return  window.requestAnimationFrame       ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame    ||
-          function( callback ){
-            window.setTimeout(callback, 1000 / 60);
-          };
-})();
-
-
-// usage:
-// instead of setInterval(render, 16) ....
-
-// (function animloop(){
-//   requestAnimFrame(animloop);
-//   render();
-// })();
-// place the rAF *before* the render() to assure as close to
-// 60fps with the setTimeout fallback.
+// start animation!
+animate();
