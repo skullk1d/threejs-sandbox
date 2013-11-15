@@ -22,12 +22,16 @@ var $container = $('#container');
 var renderer = new THREE.WebGLRenderer();
 var camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR );
 var cameraControls = new THREE.OrbitControls( camera );
-var scene = new THREE.Scene();
+var scene = new Physijs.Scene; //new THREE.Scene();
 
 // minecraft blocks
 var terrainMesh, worldWidth = 128, worldDepth = 128,
       worldHalfWidth = worldWidth / 2, worldHalfDepth = worldDepth / 2,
       data = generateHeight( worldWidth, worldDepth );
+
+//----- PHYSICS -----//
+
+
 
 //----- PLAYER -----//
 
@@ -54,7 +58,7 @@ loader.load('assets/models/steve_big.dae', function (result) {
   //dae.scale.set(5,5,5); //scaling makes model disappear? workaround: scale original model before export
 
   player.setMesh(dae);
-  player.obj.position.y = 7;
+  //player.obj.position.y = 7;
   scene.add(player.obj);
 
   // setup 3rd person view
@@ -96,6 +100,7 @@ function animate(){
   player.updateMovement(clock.getDelta());
 
   // render
+  scene.simulate(); // run physics
   renderer.render(scene, camera);
 
   // request new frame
