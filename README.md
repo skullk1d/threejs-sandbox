@@ -3,7 +3,9 @@ threejs-sandbox
 
 This is a very simple project used to experiment with WebGL.  
 The current master project is an example of a game world with a moveable character.  
-The view is 3rd person with an orbiting camera control.  
+The view is 3rd person with an orbiting camera control.
+
+**The working directory must be hosted on a server, such as localhost, in order to run!**  
 
 Controls:
 ---------
