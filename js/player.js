@@ -1,6 +1,6 @@
 player = function () {
 
-	this.scale = 1;
+	var scope = this; // need reference to self within callbacks
 
 	// movement parameters
 
@@ -20,6 +20,9 @@ player = function () {
 
 	this.mesh = null;
 	this.controls = null;
+	this.animationFPS = 6;
+
+	this.scale = 25;
 
 	// textures
 
@@ -44,13 +47,37 @@ player = function () {
 	this.activeAnimation = null;
 
 	// mesh and material
+	// mesh URL must point to exported threejs .js model
+	this.setMesh = function( meshURL ) {
 
-	this.setMesh = function( mesh ) {
-		this.mesh = mesh;
-		this.obj.add(this.mesh);
+		var loader = new THREE.JSONLoader();
+		loader.load( meshURL, function( geometry, materials ) {
+
+			geometry.computeBoundingBox();
+			scope.obj.position.y = - scope.scale * geometry.boundingBox.min.y;
+
+			var mesh = new THREE.MorphBlendMesh( geometry, materials[0]); // in the iported threejs json, materials is an array!
+
+			//load UV texture
+			var mapping = new THREE.UVMapping();
+			var charTexture = THREE.ImageUtils.loadTexture( 'assets/models/char.png', mapping, function() {
+
+				mesh.material.map = charTexture;
+
+				mesh.autoCreateAnimations( scope.animationFPS );
+				mesh.scale.set( scope.scale, scope.scale, scope.scale );
+
+				scope.obj.add( mesh );
+
+				// DEBUG
+				mesh.playAnimation('run');
+			} );
+		} );
 	};
 
+	// update skin in realtime if needed
 	this.setMaterial = function( textureURL ) {
+		// TODO: abstract this from setMesh method
 		this.material = new THREE.MeshLambertMaterial({
 		  map: THREE.ImageUtils.loadTexture( textureURL )
 		});

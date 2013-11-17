@@ -33,36 +33,10 @@ var scene = new THREE.Scene();
 
 var keyboard = new THREEx.KeyboardState();
 
-//----- PLAYER -----//
 var player = new player();
 
-// key events
-player.controls = controls;
-
-// create a new mesh with geometry or import a model, find skin, assign to player
-//player.setMaterial('assets/images/crate.jpg');
-var sphere = new THREE.Mesh(new THREE.SphereGeometry(50, 16, 16), player.material);
-var loader = new THREE.ColladaLoader();
-loader.load('assets/models/steve_big.dae', function (result) {
-  
-  var dae = result.scene;
-  dae.rotation.x = 270*(Math.PI/180);
-  //dae.scale.set(5,5,5); //scaling makes model disappear? workaround: scale original model before export
-
-  player.setMesh(dae);
-  player.obj.position.y = 7;
-  scene.add(player.obj);
-
-  // setup 3rd person view
-  camera.position.set( 0, 150, 300 );
-
-  player.obj.add(camera);
-  camera.lookAt(player.obj.position);
-  
-  // start animation!
-  init();
-  animate();
-});
+init();
+animate();
 
 //----- ANIMATION LOOP -----//
 
@@ -135,4 +109,18 @@ function init() {
   cameraControls.addEventListener( 'change', function() {
     renderer.render(scene, camera);
   } );
+
+  //----- PLAYER -----//
+
+  // key events
+  player.controls = controls;
+
+  // create a new mesh with geometry or import a model
+  player.setMesh('assets/models/MinecraftPlayer_Animated.js');
+  scene.add(player.obj);
+
+  // setup 3rd person view
+  camera.position.set( 0, 150, 300 );
+  player.obj.add(camera);
+  camera.lookAt(player.obj.position);
 }
