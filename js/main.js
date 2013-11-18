@@ -64,6 +64,9 @@ function animate(){
   } else { controls.moveRight = false; }
   
   player.updateMovement(clock.getDelta());
+  
+  // animation
+  THREE.AnimationHandler.update( clock.getDelta() );
 
   // render
   renderer.render(scene, camera);
@@ -93,13 +96,13 @@ function init() {
   scene.add(light);
 
   //----- GROUND -----//
-  var gt = THREE.ImageUtils.loadTexture( "assets/images/block_grass_128.jpg" );
+  var gt = THREE.ImageUtils.loadTexture( "assets/images/block_grass.png" );
   var gg = new THREE.PlaneGeometry( 16384, 16384 );
   var gm = new THREE.MeshPhongMaterial( { color: 0xffffff, map: gt } );
 
   var ground = new THREE.Mesh( gg, gm );
   ground.rotation.x = - Math.PI / 2;
-  ground.material.map.repeat.set( 64, 64 );
+  ground.material.map.repeat.set( 16384,16384 );
   ground.material.map.wrapS = ground.material.map.wrapT = THREE.RepeatWrapping;
   ground.receiveShadow = true;
 
@@ -116,11 +119,11 @@ function init() {
   player.controls = controls;
 
   // create a new mesh with geometry or import a model
-  player.setMesh('assets/models/MinecraftPlayer_Animated.js');
+  player.setMesh('assets/models/MinecraftPlayer_Animated2.js');
   scene.add(player.obj);
 
   // setup 3rd person view
-  camera.position.set( 0, 150, 300 );
+  camera.position.set( 10, 10, 20 );
   player.obj.add(camera);
   camera.lookAt(player.obj.position);
 }

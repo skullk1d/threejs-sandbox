@@ -4,13 +4,13 @@ player = function () {
 
 	// movement parameters
 
-	this.maxSpeed = 300;
-	this.maxReverseSpeed = -300;
+	this.maxSpeed = 12;
+	this.maxReverseSpeed = -12;
 
-	this.frontAcceleration = 600;
-	this.backAcceleration = 600;
+	this.frontAcceleration = 24;
+	this.backAcceleration = 24;
 
-	this.frontDecceleration = 600;
+	this.frontDecceleration = 24;
 
 	this.angularSpeed = 3;
 
@@ -20,9 +20,9 @@ player = function () {
 
 	this.mesh = null;
 	this.controls = null;
-	this.animationFPS = 6;
+	this.animationFPS = 24;
 
-	this.scale = 25;
+	this.scale = 1;
 
 	// textures
 
@@ -56,21 +56,29 @@ player = function () {
 			geometry.computeBoundingBox();
 			scope.obj.position.y = - scope.scale * geometry.boundingBox.min.y;
 
-			var mesh = new THREE.MorphBlendMesh( geometry, materials[0]); // in the iported threejs json, materials is an array!
+			var mesh = new THREE.SkinnedMesh( geometry, materials[0]); // in the iported threejs json, materials is an array!
 
 			//load UV texture
 			var mapping = new THREE.UVMapping();
 			var charTexture = THREE.ImageUtils.loadTexture( 'assets/models/char.png', mapping, function() {
 
-				mesh.material.map = charTexture;
+				scope.material = charTexture;
+				mesh.material.map = scope.material;
 
-				mesh.autoCreateAnimations( scope.animationFPS );
+				//mesh.autoCreateAnimations( scope.animationFPS );
 				mesh.scale.set( scope.scale, scope.scale, scope.scale );
 
 				scope.obj.add( mesh );
 
-				// DEBUG
-				mesh.playAnimation('run');
+				// add animation data to the animation handler
+				THREE.AnimationHandler.add(geometry.animations[1]);
+				// for (var i = 0; i < geometry.animations.length; i++) {
+				// 	THREE.AnimationHandler.add(geometry.animations[i]);
+				// }
+				var runAnimation = new THREE.Animation( mesh, "run" );
+
+				// play the anim
+				runAnimation.play(); // <-- not working
 			} );
 		} );
 	};
