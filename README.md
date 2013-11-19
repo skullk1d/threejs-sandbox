@@ -19,6 +19,6 @@ Controls:
 Mouse: click and drag to orbit the camera; click and trackwheel to zoom
 
 
-*The Minecraft model is from the public [Google Sketchup gallery](http://sketchup.google.com/3dwarehouse/).  
+*Special thanks to imjake9 on [MinecraftForum](http://www.minecraftforum.net/) for the Blender model.    
 The WebGL javascript library I'm using is ThreeJS: [https://github.com/mrdoob/three.js](https://github.com/mrdoob/three.js).  
 Most of what I learned came from using the tutorials and examples from [threejs.org](http://threejs.org).*
