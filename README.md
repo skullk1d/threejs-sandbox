@@ -5,7 +5,7 @@ This is a very simple project used to experiment with WebGL.
 The current master project is an example of a Minecraft game world where you can let Steve run around.  
 The view is 3rd person with an orbiting camera control.
 
-**The working directory must be hosted on a server, such as localhost, in order to run!**  
+**Clone your working directory onto hosted on a server, such as localhost, and then run index.html**  
 
 Controls:
 ---------
