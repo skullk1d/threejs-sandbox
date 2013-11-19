@@ -60,6 +60,15 @@ player = function () {
 			materials[0].skinning = true;
 			materials[0].transparent = true;
 			var mesh = new THREE.SkinnedMesh( geometry, materials[0], false); // in the imported threejs json, materials is an array!
+			this.mesh = mesh;
+
+			// add animation data to the animation handler
+			this.animations = {};
+			for (var i = 0; i < geometry.animations.length; i++) {
+				THREE.AnimationHandler.add(geometry.animations[i]);
+				var newAnimation = new THREE.Animation( mesh, geometry.animations[i].name );
+				this.animations[geometry.animations[i].name] = newAnimation;
+			}
 
 			//load UV texture
 			var mapping = new THREE.UVMapping();
@@ -71,24 +80,6 @@ player = function () {
 				mesh.scale.set( scope.scale, scope.scale, scope.scale );
 
 				scope.obj.add( mesh );
-
-				// animation attempt 1
-				//mesh.autoCreateAnimations( scope.animationFPS );
-				//mesh.setAnimationWeight( 'run', 0 );
-				//mesh.playAnimation(0);
-
-				// animation attempt 2
-				// add animation data to the animation handler
-				THREE.AnimationHandler.add(geometry.animations[0]); // <-- 0 index is 'run' (name attribute not working)
-				// for (var i = 0; i < geometry.animations.length; i++) {
-				// 	THREE.AnimationHandler.add(geometry.animations[i]);
-				// }
-				var runAnimation = new THREE.Animation( mesh, 'run' );
-
-				// play the anim
-				runAnimation.play();
-
-				
 			} );
 		} );
 	};
@@ -158,9 +149,30 @@ player = function () {
 		this.obj.rotation.y = this.bodyOrientation;
 
 		//animation
-		THREE.AnimationHandler.update( delta ); // <-- doesn't work in main loop?
+
+		if (controls.moveForward || controls.moveBackward || controls.moveLeft || controls.moveRight) {
+			setAnimation('run');
+		}
+		else {
+			setAnimation('stand');
+		}
+		THREE.AnimationHandler.update( delta );
 
 	};
+
+	// update which animations should play and stop
+	function setAnimation(animationName) {
+
+		if (this.mesh) {
+			if (this.activeAnimation != animationName) {
+				if (this.activeAnimation) {
+					this.animations[this.activeAnimation].stop();
+				}
+				this.animations[animationName].play();
+				this.activeAnimation = animationName;
+			}
+		}
+	} 
 
 	// utils
 	function exponentialEaseOut( k ) { return k === 1 ? 1 : - Math.pow( 2, - 10 * k ) + 1; }

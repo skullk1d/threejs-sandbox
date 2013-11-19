@@ -62,11 +62,11 @@ function animate(){
   if( keyboard.pressed("d") ) {
     controls.moveRight = true;
   } else { controls.moveRight = false; }
-  
+
   player.updateMovement(clock.getDelta());
   
   // animation
-  //THREE.AnimationHandler.update( clock.getDelta() );
+  //THREE.AnimationHandler.update( clock.getDelta() ); <-- inside updatemovement
 
   // render
   renderer.render(scene, camera);
@@ -119,7 +119,8 @@ function init() {
   player.controls = controls;
 
   // create a new mesh with geometry or import a model
-  player.setMesh('assets/models/MinecraftPlayer_Run.js');
+  //player.setMesh('assets/models/MinecraftPlayer_Run.js', 'run');
+  player.setMesh('assets/models/MinecraftPlayer_Animated3.js'); // <-- contains all animation actions
   scene.add(player.obj);
 
   // setup 3rd person view
