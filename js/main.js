@@ -89,7 +89,7 @@ function init() {
 
   //----- LIGHT -----//
   scene.add( new THREE.AmbientLight( 0x222222 ) );
-  scene.fog = new THREE.FogExp2( 0xaaccff, 0.0007 );
+  scene.fog = new THREE.FogExp2( 0xbfd1e5, 0.0007 );
 
   var light = new THREE.DirectionalLight( 0xffffff, 2.25 );
   light.position.set( 200, 450, 500, 1000 );
@@ -98,6 +98,8 @@ function init() {
 
   //----- GROUND -----//
   var gt = THREE.ImageUtils.loadTexture( "assets/images/block_grass.png" );
+  gt.magFilter = THREE.NearestFilter;
+  gt.minFilter = THREE.LinearMipMapLinearFilter;
   var gg = new THREE.PlaneGeometry( 16384, 16384 );
   var gm = new THREE.MeshPhongMaterial( { color: 0xffffff, map: gt } );
 

@@ -74,6 +74,9 @@ player = function () {
 			var mapping = new THREE.UVMapping();
 			var charTexture = THREE.ImageUtils.loadTexture( 'assets/models/char.png', mapping, function() {
 
+				charTexture.magFilter = THREE.NearestFilter;
+				charTexture.minFilter = THREE.LinearMipMapLinearFilter;
+
 				scope.material = charTexture;
 				mesh.material.map = scope.material;
 
