@@ -56,7 +56,10 @@ player = function () {
 			geometry.computeBoundingBox();
 			scope.obj.position.y = - scope.scale * geometry.boundingBox.min.y;
 
-			var mesh = new THREE.SkinnedMesh( geometry, materials[0]); // in the iported threejs json, materials is an array!
+			//var mesh = new THREE.MorphBlendMesh( geometry, materials[0]);
+			materials[0].skinning = true;
+			materials[0].transparent = true;
+			var mesh = new THREE.SkinnedMesh( geometry, materials[0], false); // in the imported threejs json, materials is an array!
 
 			//load UV texture
 			var mapping = new THREE.UVMapping();
@@ -65,20 +68,27 @@ player = function () {
 				scope.material = charTexture;
 				mesh.material.map = scope.material;
 
-				//mesh.autoCreateAnimations( scope.animationFPS );
 				mesh.scale.set( scope.scale, scope.scale, scope.scale );
 
 				scope.obj.add( mesh );
 
+				// animation attempt 1
+				//mesh.autoCreateAnimations( scope.animationFPS );
+				//mesh.setAnimationWeight( 'run', 0 );
+				//mesh.playAnimation(0);
+
+				// animation attempt 2
 				// add animation data to the animation handler
-				THREE.AnimationHandler.add(geometry.animations[1]);
+				THREE.AnimationHandler.add(geometry.animations[0]); // <-- 0 index is 'run' (name attribute not working)
 				// for (var i = 0; i < geometry.animations.length; i++) {
 				// 	THREE.AnimationHandler.add(geometry.animations[i]);
 				// }
-				var runAnimation = new THREE.Animation( mesh, "run" );
+				var runAnimation = new THREE.Animation( mesh, 'run' );
 
 				// play the anim
-				runAnimation.play(); // <-- not working
+				runAnimation.play();
+
+				
 			} );
 		} );
 	};
@@ -146,6 +156,9 @@ player = function () {
 		// steering
 
 		this.obj.rotation.y = this.bodyOrientation;
+
+		//animation
+		THREE.AnimationHandler.update( delta ); // <-- doesn't work in main loop?
 
 	};
 

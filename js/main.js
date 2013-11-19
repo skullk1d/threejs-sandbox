@@ -26,7 +26,7 @@ var VIEW_ANGLE = 45,
 var $container = $('#container');
 
 // create a WebGL renderer, camera and a scene
-var renderer = new THREE.WebGLRenderer();
+var renderer = new THREE.WebGLRenderer({antialias: false});
 var camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR );
 var cameraControls = new THREE.OrbitControls( camera );
 var scene = new THREE.Scene();
@@ -66,7 +66,7 @@ function animate(){
   player.updateMovement(clock.getDelta());
   
   // animation
-  THREE.AnimationHandler.update( clock.getDelta() );
+  //THREE.AnimationHandler.update( clock.getDelta() );
 
   // render
   renderer.render(scene, camera);
@@ -119,7 +119,7 @@ function init() {
   player.controls = controls;
 
   // create a new mesh with geometry or import a model
-  player.setMesh('assets/models/MinecraftPlayer_Animated2.js');
+  player.setMesh('assets/models/MinecraftPlayer_Run.js');
   scene.add(player.obj);
 
   // setup 3rd person view
