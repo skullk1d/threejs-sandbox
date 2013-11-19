@@ -89,6 +89,7 @@ function init() {
 
   //----- LIGHT -----//
   scene.add( new THREE.AmbientLight( 0x222222 ) );
+  scene.fog = new THREE.FogExp2( 0xaaccff, 0.0007 );
 
   var light = new THREE.DirectionalLight( 0xffffff, 2.25 );
   light.position.set( 200, 450, 500, 1000 );
@@ -124,7 +125,7 @@ function init() {
   scene.add(player.obj);
 
   // setup 3rd person view
-  camera.position.set( 10, 10, 20 );
+  camera.position.set( 10, 2.5, 20 );
   player.obj.add(camera);
   camera.lookAt(player.obj.position);
 }
