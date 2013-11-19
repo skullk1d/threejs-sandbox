@@ -2,7 +2,7 @@ threejs-sandbox
 ===============
 
 This is a very simple project used to experiment with WebGL.  
-The current master project is an example of a game world with a moveable character.  
+The current master project is an example of a Minecraft game world where you can let Steve run around.  
 The view is 3rd person with an orbiting camera control.
 
 **The working directory must be hosted on a server, such as localhost, in order to run!**  
@@ -16,7 +16,7 @@ Controls:
 ← A  
 		
 
-Mouse: click and drag to orbit the camera.
+Mouse: click and drag to orbit the camera; click and trackwheel to zoom
 
 
 *The Minecraft model is from the public [Google Sketchup gallery](http://sketchup.google.com/3dwarehouse/).  
