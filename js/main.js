@@ -26,43 +26,17 @@ var VIEW_ANGLE = 45,
 var $container = $('#container');
 
 // create a WebGL renderer, camera and a scene
-var renderer = new THREE.WebGLRenderer();
+var renderer = new THREE.WebGLRenderer({antialias: false});
 var camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR );
 var cameraControls = new THREE.OrbitControls( camera );
 var scene = new THREE.Scene();
 
 var keyboard = new THREEx.KeyboardState();
 
-//----- PLAYER -----//
 var player = new player();
 
-// key events
-player.controls = controls;
-
-// create a new mesh with geometry or import a model, find skin, assign to player
-//player.setMaterial('assets/images/crate.jpg');
-var sphere = new THREE.Mesh(new THREE.SphereGeometry(50, 16, 16), player.material);
-var loader = new THREE.ColladaLoader();
-loader.load('assets/models/steve_big.dae', function (result) {
-  
-  var dae = result.scene;
-  dae.rotation.x = 270*(Math.PI/180);
-  //dae.scale.set(5,5,5); //scaling makes model disappear? workaround: scale original model before export
-
-  player.setMesh(dae);
-  player.obj.position.y = 7;
-  scene.add(player.obj);
-
-  // setup 3rd person view
-  camera.position.set( 0, 150, 300 );
-
-  player.obj.add(camera);
-  camera.lookAt(player.obj.position);
-  
-  // start animation!
-  init();
-  animate();
-});
+init();
+animate();
 
 //----- ANIMATION LOOP -----//
 
@@ -88,8 +62,11 @@ function animate(){
   if( keyboard.pressed("d") ) {
     controls.moveRight = true;
   } else { controls.moveRight = false; }
-  
+
   player.updateMovement(clock.getDelta());
+  
+  // animation
+  //THREE.AnimationHandler.update( clock.getDelta() ); <-- inside updatemovement
 
   // render
   renderer.render(scene, camera);
@@ -119,13 +96,13 @@ function init() {
   scene.add(light);
 
   //----- GROUND -----//
-  var gt = THREE.ImageUtils.loadTexture( "assets/images/block_grass_128.jpg" );
+  var gt = THREE.ImageUtils.loadTexture( "assets/images/block_grass.png" );
   var gg = new THREE.PlaneGeometry( 16384, 16384 );
   var gm = new THREE.MeshPhongMaterial( { color: 0xffffff, map: gt } );
 
   var ground = new THREE.Mesh( gg, gm );
   ground.rotation.x = - Math.PI / 2;
-  ground.material.map.repeat.set( 64, 64 );
+  ground.material.map.repeat.set( 16384,16384 );
   ground.material.map.wrapS = ground.material.map.wrapT = THREE.RepeatWrapping;
   ground.receiveShadow = true;
 
@@ -135,4 +112,19 @@ function init() {
   cameraControls.addEventListener( 'change', function() {
     renderer.render(scene, camera);
   } );
+
+  //----- PLAYER -----//
+
+  // key events
+  player.controls = controls;
+
+  // create a new mesh with geometry or import a model
+  //player.setMesh('assets/models/MinecraftPlayer_Run.js', 'run');
+  player.setMesh('assets/models/MinecraftPlayer_Animated3.js'); // <-- contains all animation actions
+  scene.add(player.obj);
+
+  // setup 3rd person view
+  camera.position.set( 10, 10, 20 );
+  player.obj.add(camera);
+  camera.lookAt(player.obj.position);
 }

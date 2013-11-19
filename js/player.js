@@ -1,16 +1,16 @@
 player = function () {
 
-	this.scale = 1;
+	var scope = this; // need reference to self within callbacks
 
 	// movement parameters
 
-	this.maxSpeed = 300;
-	this.maxReverseSpeed = -300;
+	this.maxSpeed = 12;
+	this.maxReverseSpeed = -12;
 
-	this.frontAcceleration = 600;
-	this.backAcceleration = 600;
+	this.frontAcceleration = 24;
+	this.backAcceleration = 24;
 
-	this.frontDecceleration = 600;
+	this.frontDecceleration = 24;
 
 	this.angularSpeed = 3;
 
@@ -20,6 +20,9 @@ player = function () {
 
 	this.mesh = null;
 	this.controls = null;
+	this.animationFPS = 24;
+
+	this.scale = 1;
 
 	// textures
 
@@ -44,13 +47,46 @@ player = function () {
 	this.activeAnimation = null;
 
 	// mesh and material
+	// mesh URL must point to exported threejs .js model
+	this.setMesh = function( meshURL ) {
 
-	this.setMesh = function( mesh ) {
-		this.mesh = mesh;
-		this.obj.add(this.mesh);
+		var loader = new THREE.JSONLoader();
+		loader.load( meshURL, function( geometry, materials ) {
+
+			geometry.computeBoundingBox();
+			scope.obj.position.y = - scope.scale * geometry.boundingBox.min.y;
+
+			//var mesh = new THREE.MorphBlendMesh( geometry, materials[0]);
+			materials[0].skinning = true;
+			materials[0].transparent = true;
+			var mesh = new THREE.SkinnedMesh( geometry, materials[0], false); // in the imported threejs json, materials is an array!
+			this.mesh = mesh;
+
+			// add animation data to the animation handler
+			this.animations = {};
+			for (var i = 0; i < geometry.animations.length; i++) {
+				THREE.AnimationHandler.add(geometry.animations[i]);
+				var newAnimation = new THREE.Animation( mesh, geometry.animations[i].name );
+				this.animations[geometry.animations[i].name] = newAnimation;
+			}
+
+			//load UV texture
+			var mapping = new THREE.UVMapping();
+			var charTexture = THREE.ImageUtils.loadTexture( 'assets/models/char.png', mapping, function() {
+
+				scope.material = charTexture;
+				mesh.material.map = scope.material;
+
+				mesh.scale.set( scope.scale, scope.scale, scope.scale );
+
+				scope.obj.add( mesh );
+			} );
+		} );
 	};
 
+	// update skin in realtime if needed
 	this.setMaterial = function( textureURL ) {
+		// TODO: abstract this from setMesh method
 		this.material = new THREE.MeshLambertMaterial({
 		  map: THREE.ImageUtils.loadTexture( textureURL )
 		});
@@ -112,7 +148,31 @@ player = function () {
 
 		this.obj.rotation.y = this.bodyOrientation;
 
+		//animation
+
+		if (controls.moveForward || controls.moveBackward || controls.moveLeft || controls.moveRight) {
+			setAnimation('run');
+		}
+		else {
+			setAnimation('stand');
+		}
+		THREE.AnimationHandler.update( delta );
+
 	};
+
+	// update which animations should play and stop
+	function setAnimation(animationName) {
+
+		if (this.mesh) {
+			if (this.activeAnimation != animationName) {
+				if (this.activeAnimation) {
+					this.animations[this.activeAnimation].stop();
+				}
+				this.animations[animationName].play();
+				this.activeAnimation = animationName;
+			}
+		}
+	} 
 
 	// utils
 	function exponentialEaseOut( k ) { return k === 1 ? 1 : - Math.pow( 2, - 10 * k ) + 1; }
